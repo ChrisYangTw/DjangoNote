@@ -1,0 +1,39 @@
+{% extends 'school/index.html' %}
+{% block school_content %}
+    <div class="row">
+        <div class="col-4 offset-4">
+            <div class="card">
+            {% comment %}如果ImageField沒有檔案，可藉由調用name屬性來判別(使用其他屬性會拋出異常){% endcomment %}
+            {% if student.photo.name %}
+                <img src="{{ student.photo.url }}" class="card-img-top" alt="...">
+            {% else %}
+                <img src="" class="card-img-top" alt="沒有圖片">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ student.name}}</h5>
+                <p class="card-text">{{ student.information}}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">性別：{{ student.get_gender_display}}</li>
+                <li class="list-group-item">儲值金：{{ student.gold}}</li>
+                {% if level == '1' %}
+                <li class="list-group-item">
+                    參與課程：
+                    {% for course in student.course.all %}
+                    {{ course.name }}
+                    {% endfor %}
+                </li>
+                {% endif %}
+            </ul>
+            {% if level == '1' %}
+            <div class="card-body">
+                <div class="offset-8">
+                    <a href="{% url 'school:student_update' %}?id={{ student.id }}" class="btn btn-warning">編輯</a>
+                    <a href="{% url 'school:student_delete' %}?id={{ student.id }}" class="btn btn-danger" onclick="return confirm('此操作將刪除資料');">刪除</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        </div>
+    </div>
+{% endblock school_content %}

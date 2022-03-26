@@ -1,0 +1,151 @@
+{% extends 'school/index.html' %}
+{% block school_content %}
+    <div class="mx-auto" style="width: 300px;">
+        <h1 class="h1">This is register</h1>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-4 offset-4">
+            <form method="post" novalidate id="registerForm">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="row mb-3">
+                    <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">{{ field.label }}</label>
+                    {% if field.name == 'identify' %}
+                    <div class="col-sm-5">
+                        {{ field }}
+                        <span style="color: red;" class="error_message">{{ field.errors.0 }}</span>
+                    </div>
+                    <div class="col-sm-3">
+                        <input id="get_identifyBtn" type="button"  class="btn btn-success" value="發送簡訊">
+                    </div>
+                    {% else %}
+                    <div class="col-sm-8">
+                        {{ field }}
+                        <span style="color: red;" class="error_message">{{ field.errors.0 }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div class="row mb-3">
+                    <div class="col-sm-3 offset-4">
+                        <input type="reset" class="btn btn-warning" value="重新填寫">
+                    </div>
+                    <div class="col-sm-3">
+                        <input id="submitBtn" type="button" class="btn btn-primary" value="帳號註冊">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-4 offset-4">
+            <div class="row mb-3">
+                    <div class="col-sm-6">
+                        模擬簡訊發送驗證碼
+                    </div>
+                    <div class="col-sm-6 bg-info text-center"  id="identify_number"></div>
+                </div>
+        </div>
+    </div>
+{% endblock school_content %}
+{% block js %}
+    <script>
+        // $(function ())表示，當整個頁面加載後，自動執行之函數。
+        $(function () {
+            bindClickGetIdentifyNumber();  // 點擊發送簡訊按鈕
+            bindClickSubmit(); // 點擊註冊按鈕
+        });
+
+        // 定義點擊取得驗證碼的按鈕之綁定事件
+        function bindClickGetIdentifyNumber() {
+            $("#get_identifyBtn").click(function () {
+                // 先清除所有span裡的error訊息(因為發送失敗會顯示錯誤訊息)
+                $('.error_message').empty()
+
+                // 獲取使用者輸入的電話號碼
+                let mobileNumber = $("#id_mobile").val();
+                // 把手機號碼發送到服務器，執行Ajax請求，使用GET
+                $.ajax({
+                    /*
+                    設定url,type,data，這裡等同以下面網址發送
+                    /school/login_register/ajax_identify_from_sms/?mobile=使用者的電話號碼&state=register
+                     */
+                    url: "{% url 'school:ajax_get_identify_number_from_sms' %}",
+                    type: "GET",
+                    data: {mobile: mobileNumber, state: "register"},
+                    dataType: "JSON", // 將取得的回傳資料轉成JSON格式，但我們的Ajax函數已使用JsonResponse，所以這裡可不設定。
+                    success: function (res) {
+                        // 當ajax請求成功，會自動執行該函數，其中res是服務端回傳的值
+                        if (res.status === true) {
+                            // 回傳status=true時，將取得的驗證碼顯示於"模擬簡訊發送驗證碼"的div裡
+                            $("#identify_number").text(res.identify_number);
+                            countdown();  // 使發送簡訊的按鈕倒數60秒
+                        } else if (res.status === false) {
+                            /*
+                            由於使用res.error我們將可取得{欄位名稱: ["該欄位錯誤訊息"], 欄位名稱: ["該欄位錯誤訊息"], ..}
+                            使用下面的.each(data, function)來遍歷data其所有的key,value並處理。
+                            $("#id_" + key) 利用標籤的id來定位欄位
+                            next() 則表該欄位的下一個標籤，也就是用來顯示錯誤訊息的span
+                            text(value[0]) 將錯誤訊息寫入該標籤裡
+                             */
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next().text(value[0]);
+                            })
+                        } else {
+                            //pass，也就是後端回傳的res為{}，不處理任何反應。
+                        }
+                    }
+                })
+            })
+        }
+
+        // 簡訊傳送按鈕之倒數計時
+        function countdown() {
+            let get_identifyBtn = $("#get_identifyBtn");  // 取得該按鈕
+            get_identifyBtn.prop("disabled", true);  // 設定禁用
+            let time = 60; // 設定60秒
+            /*
+            使用setInterval(function, 1000),設定每1000毫秒執行一次。(也就是每秒執行一次function)
+            這裡用一個變量count = setInterval()的目的是在於，一旦指定後，setInterval()就會開始執行
+            ，等到達成條件後，再clearInterval(count)來停止執行這個函數。
+             */
+            let count = setInterval(function () {
+                // 更新該按鈕的value，顯示成x秒有效
+                get_identifyBtn.val(time + "秒有效");
+                time = time - 1;
+                if (time < 1) {
+                    clearInterval(count);
+                    get_identifyBtn.val("發送簡訊").prop("disabled", false); // 倒數完畢後，取消禁用
+                }
+            }, 1000)
+        }
+
+        // 定義點擊送出的按鈕之綁定事件
+        // 這裡要注意該<input>的type要用為button而非submit。
+        function bindClickSubmit(){
+            $("#submitBtn").click(function () {
+                // 先清除所有span裡的error訊息(因為發送失敗會顯示錯誤訊息)
+                $('.error_message').empty()
+
+                // 執行ajax請求，使用POST
+                $.ajax({
+                    url: "{% url 'school:register' %}",
+                    type: "POST",
+                    data: $("#registerForm").serialize(),  // 取得form表單內的所有資料，會含隱藏的csrf
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            location.href = res.redirect;  // 註冊成功，轉跳到指定頁面
+                        } else {
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next().text(value[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock js %}

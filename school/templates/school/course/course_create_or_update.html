@@ -1,0 +1,37 @@
+{% extends 'school/index.html' %}
+{% block school_content %}
+    <div class="row" style="margin-bottom: 10px">
+        <div class="offset-2 col-8"><h1 class="text-center">課程新增清單</h1></div>
+    </div>
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="row mb-3">
+                    <label for="{{ field.id_for_label }}" class="col-sm-2 col-form-label">{{ field.label }}</label>
+                    <div class="col-sm-10">
+                        {{ field }}
+                        <span style="color: red;">{{ field.errors.0 }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if call == 'add' %}
+                <div class="row mb-3">
+                    <div class="offset-9">
+                        <input type="reset" class="btn btn-success" onclick="return confirm('刪除已編輯資料');" value="重寫">
+                        <input type="submit" class="btn btn-primary" onclick="return confirm('送出資料')" value="送出">
+                    </div>
+                </div>
+                {% elif call == 'update' %}
+                <div class="row mb-3">
+                    <div class="offset-9">
+                        <input type="reset" class="btn btn-success" onclick="return confirm('恢復已編輯資料');" value="恢復">
+                        <input type="submit" class="btn btn-primary" onclick="return confirm('修改資料')" value="修改">
+                    </div>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock school_content %}

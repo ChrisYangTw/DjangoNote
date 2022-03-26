@@ -1,0 +1,64 @@
+{% extends 'DjangoNote/index.html' %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-1">
+            <a href="{% url 'school:teacher_list' %}" class="link-primary">教師清單</a>
+        </div>
+        <div class="col-1">
+            <a href="{% url 'school:student_list' %}" class="link-secondary">學生清單</a>
+        </div>
+        <div class="col-1">
+            <a href="{% url 'school:course_list' %}" class="link-warning">課程清單</a>
+        </div>
+        <div class="col-1">
+            <a href="{% url 'school:account_list' %}" class="link-danger">帳號列表</a>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-1" style="background-color: red">1</div>
+        <div class="col-1" style="background-color: green">2</div>
+        <div class="col-1" style="background-color: blue">3</div>
+        <div class="col-1" style="background-color: gold">4</div>
+        <div class="col-1" style="background-color: cadetblue">5</div>
+        <div class="col-1" style="background-color: skyblue">6</div>
+        <div class="col-1" style="background-color: plum">7</div>
+        <div class="col-1" style="background-color: lemonchiffon">8</div>
+        <div class="col-1" style="background-color: burlywood">9</div>
+        <div class="col-1" style="background-color: yellow">10</div>
+        <div class="col-1" style="background-color: purple">11</div>
+        <div class="col-1" style="background-color: cadetblue">12</div>
+    </div>
+    <hr style="color: purple; height: 2px;">
+    {% block school_content %}
+        <table class="table">
+            <thead>
+            <tr class="table-danger">
+                <th scope="col">課程id</th>
+                <th scope="col">課程名稱</th>
+                <th scope="col">授課教師</th>
+                <th scope="col">學員</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.id }}</td>
+                <td>
+                    <a href="{% url 'school:course_detail' %}?id={{ course.id }}">{{ course.name }}</a>
+                </td>
+                <td>
+                    <a href="{% url 'school:teacher_detail' %}?id={{ course.teacher.id }}">{{ course.teacher.name }}</a>
+                </td>
+                <td>
+                    {% for student in course.students_set.all %}
+                        <a href="{% url 'school:student_detail' %}?id={{ student.id }}">{{ student.name }}</a>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endblock school_content %}
+{% endblock content %}

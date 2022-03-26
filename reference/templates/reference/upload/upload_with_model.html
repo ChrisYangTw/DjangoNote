@@ -1,0 +1,55 @@
+{% extends 'reference/index.html' %}
+{% block reference %}
+    <h1 class="h1">this is upload with model</h1>
+    <div class="row">
+        <div class="col-3">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        <span style="color: red;">{{ field.errors.0 }}</span>
+                    </div>
+                {% endfor %}
+                <input type="submit" class="btn btn-primary" value="Upload">
+            </form>
+        </div>
+        <div class="col-9">
+            <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">上傳者</th>
+                <th scope="col">上傳檔案</th>
+                <th scope="col">上傳圖片</th>
+                <th scope="col">上傳時間</th>
+                <th scope="col">編輯</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for data in data %}
+            <tr>
+                <td>{{ data.id }}</td>
+                <td>{{ data.name }}</td>
+                <td>
+                    {% if data.file %}
+                    <a href="{{ data.file.url}}" target="_blank">{{ data.file.name }}</a>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if data.image %}
+                    <a href="{{ data.image.url }}" target="_blank">{{ data.image.name }}</a>
+                    {% endif %}
+                </td>
+                <td>{{ data.create_time }}</td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="{% url 'reference:delete_upload_with_model' data.id %}" role="button">刪除</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+{% endblock reference %}

@@ -1,0 +1,51 @@
+{% extends 'school/index.html' %}
+{% block school_content %}
+    {% if level == '1' %}
+        <div class="row">
+            <div class="col-2">
+                <a class="btn btn-primary" href="{% url 'school:teacher_create' %}" role="button">新增教師</a>
+            </div>
+        </div>
+        <br>
+    {% endif %}
+    <div class="row">
+        <div class="col">
+            <div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">name</th>
+                        <th scope="col">gender</th>
+                        <th scope="col">photo</th>
+                        <th scope="col">employment</th>
+                        {% if level == '1' %}
+                            <th scope="col">salary</th>
+                        {% endif %}
+                        <th scope="col">information</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for teacher in teachers %}
+                        <tr>
+                            <td>{{ teacher.id }}</td>
+                            <td>
+                                <a href="{% url 'school:teacher_detail' %}?id={{ teacher.id }}">{{ teacher.name }}</a>
+                            </td>
+                            <td>{{ teacher.get_gender_display }}</td>
+                            <td>
+                                <a href="{{ teacher.photo.url }}" target="_blank">photo</a>
+                            </td>
+                            <td>{{ teacher.employment }}</td>
+                            {% if level == '1' %}
+                                <td>{{ teacher.salary }}</td>
+                            {% endif %}
+                            <td>{{ teacher.information }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock school_content %}

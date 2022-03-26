@@ -1,0 +1,49 @@
+{% extends 'school/index.html' %}
+{% block school_content %}
+    {% if level == '1' %}
+        <div class="row">
+            <div class="col-2">
+                <a class="btn btn-primary" href="{% url 'school:course_create' %}" role="button">新增課程</a>
+            </div>
+        </div>
+        <br>
+    {% endif %}
+    <div class="row">
+        <div class="col">
+            <div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">name</th>
+                        <th scope="col">fee</th>
+                        <th scope="col">start</th>
+                        <th scope="col">end</th>
+                        <th scope="col">limit</th>
+                        <th scope="col">comment</th>
+                        <th scope="col">teacher</th>
+                        <th scope="col">status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for course in courses %}
+                        <tr>
+                            <td>{{ course.id }}</td>
+                            <td>
+                                <a href="{% url 'school:course_detail' %}?id={{ course.id }}">{{ course.name }}</a>
+                            </td>
+                            <td>{{ course.fee }}</td>
+                            <td>{{ course.start }}</td>
+                            <td>{{ course.end }}</td>
+                            <td>{{ course.limit }}</td>
+                            <td>{{ course.comment }}</td>
+                            <td>{{ course.teacher }}</td>
+                            <td>{{ course.status }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock school_content %}

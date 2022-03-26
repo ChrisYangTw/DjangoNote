@@ -1,0 +1,58 @@
+{% extends 'DjangoNote/index.html' %}
+{% block content %}
+    <h1> this is reference</h1>
+    <div class="row">
+        <div class="col-1">
+            <a href="{% url 'reference:upload_file' %}" class="btn btn-outline-primary btn-sm" role="button">上傳檔案</a>
+        </div>
+        <div class="col-1">
+            <a href="{% url 'reference:upload_image' %}" class="btn btn-outline-primary btn-sm" role="button">上傳圖片</a>
+        </div>
+        <div class="col-1">
+            <a href="{% url 'reference:upload_with_model' %}" class="btn btn-outline-primary btn-sm" role="button">使用模型</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1" style="background-color: red">1</div>
+        <div class="col-1" style="background-color: green">2</div>
+        <div class="col-1" style="background-color: blue">3</div>
+        <div class="col-1" style="background-color: gold">4</div>
+        <div class="col-1" style="background-color: cadetblue">5</div>
+        <div class="col-1" style="background-color: skyblue">6</div>
+        <div class="col-1" style="background-color: plum">7</div>
+        <div class="col-1" style="background-color: lemonchiffon">8</div>
+        <div class="col-1" style="background-color: burlywood">9</div>
+        <div class="col-1" style="background-color: yellow">10</div>
+        <div class="col-1" style="background-color: purple">11</div>
+        <div class="col-1" style="background-color: cadetblue">12</div>
+    </div>
+    <hr style="color: purple; height: 2px;">
+    {% block reference %}
+    <div>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors}}
+                </div>
+            {% endfor %}
+            <input type="submit" value="送出">
+        </form>
+    </div>
+    <hr>
+    <div>
+    {{ form.as_p }}
+    </div>
+    <hr>
+    <div>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <lable for="f1">upload a file</lable>
+            <input type="file" name="f1" id="f1">
+            <input type="submit" value="Upload">
+        </form>
+    </div>
+    {% endblock reference %}
+{% endblock content %}
